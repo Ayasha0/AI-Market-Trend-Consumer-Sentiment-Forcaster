@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#3E5F56"                  # Sage green
+backgroundColor = "#F3F1EA"               # Off-white canvas
+secondaryBackgroundColor = "#EFEADF"      # Sand panels
+textColor = "#2B2B2B"                     # Dark readable text
+font = "sans serif"

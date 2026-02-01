@@ -21,6 +21,26 @@ import threading
 import time
 from external_api import reddit_api, news
 
+THEME_COLORS = {
+    "sage": "#3E5F56",
+    "mint": "#8FB9A8",
+    "terracotta": "#E8A089",
+    "gold": "#E6C27A",
+    "blue": "#7AB2B2",
+    "charcoal": "#2F3E3E",
+    "bg": "#F3F1EA",
+    'orange': "#FAB95B"
+}
+
+COLOR_SEQUENCE = [
+    THEME_COLORS["sage"],
+    THEME_COLORS["mint"],
+    THEME_COLORS["terracotta"],
+    THEME_COLORS["gold"],
+    THEME_COLORS["charcoal"],
+]
+
+
 
 def run_scheduler():
     
@@ -175,25 +195,81 @@ if __name__ == "__main__":
                 names="Sentiment",
                 values="Count",
                 title="Overall Sentiment Distribution", 
-                hole=0.4
+                hole=0.4,
             )
+
+            fig.update_traces(
+                marker=dict(
+                    colors=[
+                        THEME_COLORS["sage"],
+                        THEME_COLORS["terracotta"],
+                        THEME_COLORS["blue"],
+                        THEME_COLORS['gold']
+                    ]
+                )
+            )
+
+
+            fig.update_layout(
+                paper_bgcolor=THEME_COLORS["bg"],
+                plot_bgcolor=THEME_COLORS["bg"]
+            )
+            
             st.plotly_chart(fig, use_container_width=True)
             
         with col2:
             category_sentiment = (
                 filtered_reviews.groupby(["category", "sentiment_label"]).size().reset_index(name="count")
             )
-            
+
             fig = px.bar(
-                category_sentiment, 
+                category_sentiment,
                 x="category",
                 y="count",
                 color="sentiment_label",
                 title="Category-wise Sentiment Comparison",
-                barmode="group"
+                barmode="group",
+                color_discrete_map={
+                    "Positive": THEME_COLORS["sage"],
+                    "Negative": THEME_COLORS["terracotta"],
+                    "Neutral": THEME_COLORS["blue"],
+                    "unknown": THEME_COLORS['gold']
+                }
             )
-            
+
+            fig.update_layout(
+                paper_bgcolor=THEME_COLORS["bg"],
+                plot_bgcolor=THEME_COLORS["bg"]
+            )
+
             st.plotly_chart(fig, use_container_width=True)
+
+            
+            # fig = px.bar(
+            #     category_sentiment, 
+            #     x="category",
+            #     y="count",
+            #     color="sentiment_label",
+            #     title="Category-wise Sentiment Comparison",
+            #     barmode="group"
+            # )
+
+            # fig.update_layout(
+            #     paper_bgcolor=THEME_COLORS["bg"],
+            #     plot_bgcolor=THEME_COLORS["bg"]
+            # )
+
+            # fig.update_traces(
+            #     marker=dict(
+            #         color=[
+            #             THEME_COLORS["sage"],
+            #             THEME_COLORS["terracotta"],
+            #             THEME_COLORS["gold"]
+            #         ]
+            #     )
+            # )
+            
+            # st.plotly_chart(fig, use_container_width=True)
             
             
             
@@ -206,18 +282,40 @@ if __name__ == "__main__":
             filtered_reviews.groupby([pd.Grouper(key="review_date", freq="W"), "sentiment_label"])
             .size()
             .reset_index(name="count")
-        )    
-
+        )  
 
         fig_trend = px.line(
             sentiment_trand,
             x="review_date",
             y="count",
-            color = "sentiment_label",
-            title="Weekly Sentiment Trend"
+            color="sentiment_label",
+            title="Weekly Sentiment Trend",
+            color_discrete_map={
+                "Positive": THEME_COLORS["sage"],
+                "Negative": THEME_COLORS["terracotta"],
+                "Neutral": THEME_COLORS["blue"],
+                "unknown": THEME_COLORS['gold']
+            }
+        )
+
+        fig_trend.update_layout(
+            paper_bgcolor=THEME_COLORS["bg"],
+            plot_bgcolor=THEME_COLORS["bg"]
         )
 
         st.plotly_chart(fig_trend, use_container_width=True)
+  
+
+
+        # fig_trend = px.line(
+        #     sentiment_trand,
+        #     x="review_date",
+        #     y="count",
+        #     color = "sentiment_label",
+        #     title="Weekly Sentiment Trend"
+        # )
+
+        # st.plotly_chart(fig_trend, use_container_width=True)
 
 
         # category trend over time 
@@ -257,7 +355,18 @@ if __name__ == "__main__":
             x="category",
             y="count",
             color="sentiment_label",
-            barmode="group"
+            barmode="group",
+            color_discrete_map={
+                    "Positive": THEME_COLORS["sage"],
+                    "Negative": THEME_COLORS["terracotta"],
+                    "Neutral": THEME_COLORS["blue"],
+                    "unknown": THEME_COLORS['gold']
+                }
+        )
+
+        fig.update_layout(
+            paper_bgcolor=THEME_COLORS["bg"],
+            plot_bgcolor=THEME_COLORS["bg"]
         )
 
         st.plotly_chart(fig_cat, use_container_width=True)
@@ -281,6 +390,10 @@ if __name__ == "__main__":
             title="Topic Distribution"
         )
 
+        fig_topic.update_traces(
+            marker_color=THEME_COLORS["sage"]  # or gold / terracotta
+        )
+
         st.plotly_chart(fig_topic, use_container_width=True)
 
 
@@ -302,6 +415,10 @@ if __name__ == "__main__":
             y="mentions",
             title="Trending categories on Reddit"
         )
+        fig_reddit.update_traces(
+            marker_color=THEME_COLORS["blue"]  # or gold / terracotta
+        )
+
 
         st.plotly_chart(fig_reddit, use_container_width=True)
 
@@ -320,7 +437,18 @@ if __name__ == "__main__":
             news_sent,
             names="sentiment_label",
             values="count",
-            title="News Sentiment distribution"
+            title="News Sentiment distribution",
+            color='sentiment_label', 
+            color_discrete_map={
+                "Positive": THEME_COLORS["sage"],
+                "Negative": THEME_COLORS["terracotta"],
+                "Neutral":  THEME_COLORS["blue"],
+            }
+        )
+
+        fig_news.update_layout(
+            paper_bgcolor=THEME_COLORS["bg"],
+            plot_bgcolor=THEME_COLORS["bg"]
         )
 
         st.plotly_chart(fig_news, use_container_width=True)
@@ -374,8 +502,18 @@ if __name__ == "__main__":
             x="category",
             y=["Review Mentions", "Reddit Mentions", "News Mentions"],
             title="Category Presence Across Reviews, Reddit and News",
-            barmode="group"
-        )
+            barmode="group",
+            color_discrete_map={
+                    "Review Mentions": THEME_COLORS["sage"],
+                    "Reddit Mentions": THEME_COLORS["terracotta"],
+                    "News Mentions": THEME_COLORS["blue"],
+                }
+            )
+
+        fig.update_layout(
+                paper_bgcolor=THEME_COLORS["bg"],
+                plot_bgcolor=THEME_COLORS["bg"]
+            )
 
         st.plotly_chart(fig_compare, use_container_width=True)
 
