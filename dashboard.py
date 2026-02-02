@@ -111,6 +111,7 @@ if __name__ == "__main__":
 
     # load vector database 
     @st.cache_resource
+    
     def load_vector_db():
         # load embedding model 
 
